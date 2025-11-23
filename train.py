@@ -9,9 +9,7 @@ from sklearn.utils import class_weight
 from collections import Counter
 import matplotlib.pyplot as plt
 
-# =====================================
-# 1️⃣ Setup Paths
-# =====================================
+#paths for folders
 dataset_dir = "kidney-dataset"
 train_dir = os.path.join(dataset_dir, "train")
 valid_dir = os.path.join(dataset_dir, "valid")
@@ -25,9 +23,6 @@ if not os.path.exists(train_dir):
 if not os.path.exists(valid_dir):
     raise FileNotFoundError(f"❌ Validation folder not found at {valid_dir}")
 
-# =====================================
-# 2️⃣ Define Classes & Label Logic
-# =====================================
 classes = ["cyst", "stone", "tumour", "normal"]
 
 def get_label_from_name(filename):
@@ -39,9 +34,6 @@ def get_label_from_name(filename):
             return idx
     return None
 
-# =====================================
-# 3️⃣ Load Dataset Function
-# =====================================
 def load_images_from_folder(folder):
     X, y = [], []
     files = [f for f in os.listdir(folder) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
@@ -62,9 +54,7 @@ def load_images_from_folder(folder):
             print(f"⚠️ Error loading {file}: {e}")
     return np.array(X), np.array(y)
 
-# =====================================
-# 4️⃣ Load Train & Validation Data
-# =====================================
+#load data
 X_train, y_train = load_images_from_folder(train_dir)
 X_val, y_val = load_images_from_folder(valid_dir)
 
@@ -77,9 +67,6 @@ print("📊 Valid class distribution:", dict(Counter(y_val)))
 y_train_cat = tf.keras.utils.to_categorical(y_train, num_classes=len(classes))
 y_val_cat = tf.keras.utils.to_categorical(y_val, num_classes=len(classes))
 
-# =====================================
-# 5️⃣ Data Augmentation
-# =====================================
 datagen = ImageDataGenerator(
     rotation_range=25,
     zoom_range=0.2,
@@ -88,9 +75,6 @@ datagen = ImageDataGenerator(
 )
 datagen.fit(X_train)
 
-# =====================================
-# 6️⃣ Compute Class Weights
-# =====================================
 weights = class_weight.compute_class_weight(
     class_weight="balanced",
     classes=np.unique(y_train),
@@ -99,9 +83,7 @@ weights = class_weight.compute_class_weight(
 class_weights = dict(enumerate(weights))
 print("⚖️ Class Weights:", class_weights)
 
-# =====================================
-# 7️⃣ Build CNN Model
-# =====================================
+#Cnn here
 print("\n🏗️ Building CNN model...")
 model = Sequential([
     Conv2D(32, (3,3), activation="relu", input_shape=(128,128,3)),
@@ -125,9 +107,7 @@ model.compile(optimizer=Adam(learning_rate=0.0001),
 print("✅ Model compiled successfully!\n")
 model.summary()
 
-# =====================================
-# 8️⃣ Train Model
-# =====================================
+#training model
 print("\n🚀 Starting model training...")
 history = model.fit(
     datagen.flow(X_train, y_train_cat, batch_size=32),
@@ -137,15 +117,10 @@ history = model.fit(
 )
 print("\n✅ Model training complete!")
 
-# =====================================
-# 9️⃣ Save Model
-# =====================================
 model.save("ckd_cnn_model_v4.h5")
 print("💾 Model saved as 'ckd_cnn_model_v4.h5'")
 
-# =====================================
-# 🔟 Plot Training Performance
-# =====================================
+#training performance code
 plt.figure(figsize=(10,4))
 plt.subplot(1,2,1)
 plt.plot(history.history['accuracy'], label='Train Accuracy', marker='o')

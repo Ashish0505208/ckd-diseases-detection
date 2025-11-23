@@ -10,9 +10,7 @@ from sklearn.utils import class_weight
 from collections import Counter
 import matplotlib.pyplot as plt
 
-# =====================================
-# 1️⃣ Setup Paths
-# =====================================
+
 dataset_dir = "kidney-dataset"
 train_dir = os.path.join(dataset_dir, "train")
 valid_dir = os.path.join(dataset_dir, "valid")
@@ -21,9 +19,7 @@ print("✅ Libraries loaded successfully!")
 
 classes = ["cyst", "stone", "tumour", "normal"]
 
-# =====================================
-# 2️⃣ Label Extraction Function
-# =====================================
+
 def get_label_from_name(filename):
     name = filename.lower()
     if "tumor" in name or "tumour" in name:
@@ -33,9 +29,7 @@ def get_label_from_name(filename):
             return idx
     return None
 
-# =====================================
-# 3️⃣ Load Dataset Function
-# =====================================
+
 def load_images_from_folder(folder):
     X, y = [], []
     files = [f for f in os.listdir(folder) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
@@ -55,9 +49,7 @@ def load_images_from_folder(folder):
             print(f"⚠️ Error loading {file}: {e}")
     return np.array(X), np.array(y)
 
-# =====================================
-# 4️⃣ Load Train & Validation Data
-# =====================================
+
 X_train, y_train = load_images_from_folder(train_dir)
 X_val, y_val = load_images_from_folder(valid_dir)
 
@@ -70,9 +62,7 @@ print("📊 Valid class distribution:", dict(Counter(y_val)))
 y_train_cat = tf.keras.utils.to_categorical(y_train, num_classes=len(classes))
 y_val_cat = tf.keras.utils.to_categorical(y_val, num_classes=len(classes))
 
-# =====================================
-# 5️⃣ Data Augmentation (stronger)
-# =====================================
+
 datagen = ImageDataGenerator(
     rotation_range=35,
     width_shift_range=0.15,
@@ -85,9 +75,7 @@ datagen = ImageDataGenerator(
 )
 datagen.fit(X_train)
 
-# =====================================
-# 6️⃣ Compute Class Weights (for balancing)
-# =====================================
+
 weights = class_weight.compute_class_weight(
     class_weight="balanced",
     classes=np.unique(y_train),
@@ -96,9 +84,7 @@ weights = class_weight.compute_class_weight(
 class_weights = dict(enumerate(weights))
 print("⚖️ Class Weights:", class_weights)
 
-# =====================================
-# 7️⃣ Improved CNN Architecture
-# =====================================
+
 print("\n🏗️ Building Improved CNN model (VGG-style)...")
 
 model = Sequential([
@@ -143,18 +129,14 @@ model.compile(
 print("✅ Model compiled successfully!\n")
 model.summary()
 
-# =====================================
-# 8️⃣ Callbacks
-# =====================================
+
 callbacks = [
     EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True),
     ReduceLROnPlateau(monitor='val_loss', factor=0.3, patience=3, min_lr=1e-6),
     ModelCheckpoint('best_ckd_model_v5.h5', monitor='val_accuracy', save_best_only=True)
 ]
 
-# =====================================
-# 9️⃣ Train Model
-# =====================================
+
 print("\n🚀 Starting model training...")
 history = model.fit(
     datagen.flow(X_train, y_train_cat, batch_size=32),
@@ -166,15 +148,11 @@ history = model.fit(
 
 print("\n✅ Model training complete!")
 
-# =====================================
-# 🔟 Save Final Model
-# =====================================
+
 model.save('/content/drive/MyDrive/ckd_cnn_model_v5.h5')
 print("💾 Model saved as 'ckd_cnn_model_v5_final.h5'")
 
-# =====================================
-# 📊 Plot Performance
-# =====================================
+
 plt.figure(figsize=(10,4))
 plt.subplot(1,2,1)
 plt.plot(history.history['accuracy'], label='Train Accuracy')
