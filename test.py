@@ -5,7 +5,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import matplotlib.pyplot as plt
 
 #trained model path
-model_path = "ckd_cnn_model_v4.h5"
+model_path = "ckd_cnn_90accuracy.h5"
 model = tf.keras.models.load_model(model_path)
 print(f"✅ Model loaded successfully from '{model_path}'")
 
