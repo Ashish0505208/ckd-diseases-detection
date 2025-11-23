@@ -13,7 +13,7 @@ print(f"✅ Model loaded successfully from '{model_path}'")
 class_labels = ["Cyst", "Stone", "Tumour", "Normal"]
 
 
-test_dir = r"kidney-dataset/test"  #test folder path
+test_dir = r"kidney-dataset/test"
 
 if not os.path.exists(test_dir):
     raise FileNotFoundError(f"❌ Test folder not found at {test_dir}")

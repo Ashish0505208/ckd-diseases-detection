@@ -3,22 +3,14 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-# ======================================
-# 1️⃣ Load the trained model
-# ======================================
+
 model_path = "MobileNetV2_Kidney_Final.h5"
 model = tf.keras.models.load_model(model_path)
 print(f"✅ Model loaded from: {model_path}")
 
-# ======================================
-# 2️⃣ Class labels (must match training)
-# ======================================
 class_labels = ["Cyst", "Stone", "Tumour", "Normal"]
 
-# ======================================
-# 3️⃣ Path to folder with test images
-# ======================================
-test_folder = r"kidney-dataset/test"   # ← change if needed
+test_folder = r"kidney-dataset/test"
 
 if not os.path.exists(test_folder):
     raise FileNotFoundError(f"❌ Folder not found: {test_folder}")
@@ -30,18 +22,14 @@ if len(files) == 0:
 
 print(f"\n🔍 Found {len(files)} test images.\n")
 
-# ======================================
-# 4️⃣ Run predictions
-# ======================================
+
 for idx, filename in enumerate(files, start=1):
     img_path = os.path.join(test_folder, filename)
 
-    # Load & preprocess image
     img = load_img(img_path, target_size=(224, 224))
     img_arr = img_to_array(img) / 255.0
     img_arr = np.expand_dims(img_arr, axis=0)
 
-    # Predict
     preds = model.predict(img_arr, verbose=0)
     pred_idx = np.argmax(preds)
     confidence = preds[0][pred_idx] * 100

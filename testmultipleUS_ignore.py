@@ -14,7 +14,7 @@ class_labels = ['Cyst', 'Stone', 'Tumour', 'Normal']
 print("🧩 Class labels loaded:", class_labels, "\n")
 
 
-folder_path = 'kidney-dataset/test'  #folder path
+folder_path = 'kidney-dataset/test'
 print(f"📁 Loading images from folder: {folder_path}\n")
 
 

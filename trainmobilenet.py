@@ -8,9 +8,6 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
-# ================================
-# 1️⃣ CLASS LABELS (MATCH CNN ORDER)
-# ================================
 classes = ["cyst", "stone", "tumor", "normal"]
 num_classes = len(classes)
 
@@ -21,9 +18,6 @@ def get_label_from_name(filename):
         if c in fname: return idx
     return None
 
-# ================================
-# 2️⃣ CUSTOM STREAMING GENERATOR
-# ================================
 class KidneyGenerator(tf.keras.utils.Sequence):
     def __init__(self, folder, batch_size=32, img_size=(224,224)):
         self.folder = folder
@@ -54,9 +48,6 @@ class KidneyGenerator(tf.keras.utils.Sequence):
 
         return np.array(X), tf.keras.utils.to_categorical(y, num_classes)
 
-# ================================
-# 3️⃣ LOAD TRAIN + VALID GENERATORS
-# ================================
 train_dir = "kidney-dataset/train"
 valid_dir = "kidney-dataset/valid"
 
@@ -66,9 +57,6 @@ valid_gen = KidneyGenerator(valid_dir, batch_size=32)
 print("Train samples:", len(train_gen.files))
 print("Valid samples:", len(valid_gen.files))
 
-# ================================
-# 4️⃣ BUILD MOBILE-NET MODEL
-# ================================
 base = MobileNetV2(include_top=False, weights="imagenet", input_shape=(224,224,3))
 for layer in base.layers:
     layer.trainable = False
@@ -89,9 +77,6 @@ model.compile(
 
 model.summary()
 
-# ================================
-# 5️⃣ TRAIN MODEL
-# ================================
 history = model.fit(
     train_gen,
     validation_data=valid_gen,
@@ -101,9 +86,6 @@ history = model.fit(
 model.save("MobileNetV2_Kidney_Final.h5")
 print("Saved as MobileNetV2_Kidney_Final.h5")
 
-# ================================
-# 6️⃣ PLOT ACCURACY + LOSS
-# ================================
 plt.figure(figsize=(10,4))
 plt.subplot(1,2,1)
 plt.plot(history.history["accuracy"])
